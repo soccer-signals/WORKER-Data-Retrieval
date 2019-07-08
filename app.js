@@ -11,8 +11,7 @@ const   express         = require("express"),
 const   $port           = process.env.PORT || 7100,
         $refreshRate    = 3;
 
-
-        import dataUpdates from  './Database Models/Data-History'
+import dataUpdates from  './Database Models/Data-History'
  
 import mongoose from "mongoose"
 mongoose.set('useFindAndModify', false);
@@ -23,6 +22,8 @@ mongoose.connect('mongodb+srv://robertkingsleyiv:Mompex35@@@cluster0-arlog.mongo
 });
 
 
+var applicationIsInit = Boolean
+
 
 
 
@@ -30,36 +31,41 @@ mongoose.connect('mongodb+srv://robertkingsleyiv:Mompex35@@@cluster0-arlog.mongo
 var APPLICATION_DATA
   var count = 0
   countriesDownload().then(countries=>{
+    
     function getApiDataAndSetVar(){
+
  
       refreshData(countries).then(data =>{
   
           count++
           console.log(count)
           APPLICATION_DATA = data
-       })
-       setInterval(getApiDataAndSetVar, $refreshRate * 1000)
+      })
+ 
+
+
   }
-  })
-
-
-function onNewMinute() {
+  function onNewMinute() {
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes();
+  
+    const updateHistory = new dataUpdates({
+      Data: APPLICATION_DATA.finished,
+      Date: date
+    });
+    updateHistory.save().then(() => console.log('Data History Uploaded'));
+  }
   var today = new Date();
-  var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes();
+  var time = new Date();
+  var secondsRemaining = (60 - time.getSeconds()) * 1000
+  setTimeout(function () {
+    setInterval(onNewMinute, 60000);
+    onNewMinute()
+  }, secondsRemaining);
+  
 
-  const updateHistory = new dataUpdates({
-    Data: APPLICATION_DATA.finished,
-    Date: date
-  });
-  updateHistory.save().then(() => console.log('Data History Uploaded'));
-}
-var today = new Date();
-var time = new Date();
-var secondsRemaining = (60 - time.getSeconds()) * 1000
-setTimeout(function () {
-  setInterval(onNewMinute, 60000);
-  onNewMinute()
-}, secondsRemaining);
+  setInterval(getApiDataAndSetVar, $refreshRate * 1000)
+  })
 
 
 
