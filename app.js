@@ -1,6 +1,7 @@
 // Imports
 import {refreshData} from "./Modules/Sportmonks_Api_Connect"
 import { lookup } from "dns";
+import {countriesDownload} from './Modules/Sportmonks_Api_Connect'
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
@@ -22,18 +23,26 @@ mongoose.connect('mongodb+srv://robertkingsleyiv:Mompex35@@@cluster0-arlog.mongo
 });
 
 
+
+
+
+
 var APPLICATION_DATA
   var count = 0
-function getApiDataAndSetVar(){
+  countriesDownload().then(countries=>{
+    function getApiDataAndSetVar(){
  
-    refreshData().then(data =>{
+      refreshData(countries).then(data =>{
+  
+          count++
+          console.log(count)
+          APPLICATION_DATA = data
+       })
+       setInterval(getApiDataAndSetVar, $refreshRate * 1000)
+  }
+  })
 
-        count++
-        console.log(count)
-        APPLICATION_DATA = data
-     })
-}
-setInterval(getApiDataAndSetVar, $refreshRate * 1000)
+
 function onNewMinute() {
   var today = new Date();
   var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes();

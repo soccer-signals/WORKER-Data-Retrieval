@@ -42,7 +42,7 @@ import dataUpdates from  './../Database Models/Data-History'
     }
 
 
- function countriesDownload (cb) {
+ export function countriesDownload (cb) {
             return new Promise( (resolve) => {
                 sportmonks.get("v2.0/countries", {
                     page: 1
@@ -81,14 +81,11 @@ import dataUpdates from  './../Database Models/Data-History'
                 })
             })
         }
-        var countries
-       countriesDownload().then((resp)=>{
-        countries = resp
-        console.log("countries")
-       }
+   
+ 
 
-       )
-        export function refreshData () {
+    
+        export function refreshData (countries) {
             return new Promise((resolve) =>{
                 var finished = []
                 var leagues = []
@@ -272,8 +269,7 @@ import dataUpdates from  './../Database Models/Data-History'
                                     .map(id => {
                                         return playingLeagues.find(a => a.id === id)
                                     })
-                                leagues.forEach((league, index) => {
-                                        
+                                leagues.forEach((league, index) => {  
                                     finished.push({
                                             league: league.Name,
                                             id: league.id,
