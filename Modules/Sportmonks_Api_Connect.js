@@ -18,7 +18,7 @@ import dataUpdates from  './../Database Models/Data-History'
     
     }
     
-    var countries = []
+  
     function $time() {
     
             var today = new Date();
@@ -40,14 +40,14 @@ import dataUpdates from  './../Database Models/Data-History'
     
     
     }
-    
 
-       export function countriesDownload (cb) {
-            return new Promise(function (resolve) {
+
+ function countriesDownload (cb) {
+            return new Promise( (resolve) => {
                 sportmonks.get("v2.0/countries", {
                     page: 1
                 }).then(resp => {
-                    countries = resp.data
+                   var countries = resp.data
                     sportmonks.get("v2.0/countries", {
                         page: 2
                     }).then(resp => {
@@ -67,7 +67,7 @@ import dataUpdates from  './../Database Models/Data-History'
                                     page: 5
                                 }).then(resp => {
                                     var d = c.concat(resp.data)
-                                    console.log("Countries Downloaded.")
+                        
                                     countries = d
                                     resolve(countries)
     
@@ -81,8 +81,15 @@ import dataUpdates from  './../Database Models/Data-History'
                 })
             })
         }
+        var countries
+       countriesDownload().then((resp)=>{
+        countries = resp
+        console.log("countries")
+       }
+
+       )
         export function refreshData () {
-            return new Promise(function (resolve) {
+            return new Promise((resolve) =>{
                 var finished = []
                 var leagues = []
                 var games = []
@@ -95,7 +102,7 @@ import dataUpdates from  './../Database Models/Data-History'
                 var fifteenMinutesAgo = $time().fifteenMinutesAgoParsed
     
     
-                sportmonks.get("v2.0/livescores", livescoreParams).then(resp => {
+                sportmonks.get("v2.0/livescores/now", livescoreParams).then(resp => {
              
              var       apiData = resp.data
                     var dataFiveMinAgo = []
@@ -266,6 +273,7 @@ import dataUpdates from  './../Database Models/Data-History'
                                         return playingLeagues.find(a => a.id === id)
                                     })
                                 leagues.forEach((league, index) => {
+                                        
                                     finished.push({
                                             league: league.Name,
                                             id: league.id,
